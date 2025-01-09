@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NER Results</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.3/css/mdb.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7fa;
+            padding-top: 80px;
+        }
+        
+        .metrics-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #673AB7;
+        }
+        
+        .entity-table {
+            margin-top: 20px;
+        }
+        
+        .entity-tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        /* Back Button Styles */
+        .back-button {
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+
+        .back-button:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
+        <a class="navbar-brand" href="/">NER Analysis</a>
+    </nav>
+
+    <!-- Back Button -->
+    <div class="container mt-4">
+        <a href="http://127.0.0.1:5000/" class="back-button">Back to Home</a>
+    </div>
+
+    <div class="container mt-5">
+        <!-- Original Text -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Original Text</h5>
+                        <p class="card-text">{{ rawtext }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Named Entities</h5>
+                        <div>{{ result|safe }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if metrics %}
+        <!-- Performance Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="metrics-card text-center">
+                    <h6>Accuracy</h6>
+                    <div class="metric-value">{{ metrics.accuracy }}</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metrics-card text-center">
+                    <h6>Precision</h6>
+                    <div class="metric-value">{{ metrics.precision }}</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metrics-card text-center">
+                    <h6>Recall</h6>
+                    <div class="metric-value">{{ metrics.recall }}</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metrics-card text-center">
+                    <h6>F1 Score</h6>
+                    <div class="metric-value">{{ metrics.f1_score }}</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Model Predictions</h5>
+                        <table class="table entity-table">
+                            <thead>
+                                <tr>
+                                    <th>Entity</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entity in predicted_entities %}
+                                <tr>
+                                    <td>{{ entity.text }}</td>
+                                    <td><span class="entity-tag bg-primary text-white">{{ entity.label }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Ground Truth</h5>
+                        <table class="table entity-table">
+                            <thead>
+                                <tr>
+                                    <th>Entity</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entity in ground_truth_entities %}
+                                <tr>
+                                    <td>{{ entity.text }}</td>
+                                    <td><span class="entity-tag bg-success text-white">{{ entity.label }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.min.js"></script>
+</body>
+</html>
